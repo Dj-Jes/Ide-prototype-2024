@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities;
-
+/*
 public class DrinksMenu
 {
     [Key]
@@ -14,3 +14,4 @@ public class DrinksMenu
     [Required] public DateTime AvailableFrom { get; set; }
     public List<Drink> Drinks { get; set; }
 }
+*/

@@ -12,21 +12,21 @@ public class DataAccess : IDataAccess
     {
         _dataContext = dataContext;
     }
-    
+    /*
     public async Task<DrinksMenu> CreateDrinksMenu(DrinksMenu drinksMenu)
     {
         _dataContext.DrinkMenus.Add(drinksMenu);
         await _dataContext.SaveChangesAsync();
         return drinksMenu;
     }
-    
-    public async Task<Drink> CreateDrink(Drink drink)
+    */
+    public async Task<Item> CreateItem(Item item)
     {
-        _dataContext.Drinks.Add(drink);
+        _dataContext.Items.Add(item);
         await _dataContext.SaveChangesAsync();
-        return drink;
+        return item;
     }
-
+/*
     public async Task<DrinksMenu> AddDrinkToDrinkMenu(int drinksMenuId, int drinkId)
     {
         var drinkMenue = await _dataContext.DrinkMenus
@@ -56,5 +56,5 @@ public class DataAccess : IDataAccess
             .Where(d => d.AlcoholPrecentage >= lowerAlcoholPrecentage && d.AlcoholPrecentage <= higherAlcoholPrecentage && d.IncludeUmbrella == needsUmbrella)
             .ToListAsync();
     }
-    
+    */
 }
