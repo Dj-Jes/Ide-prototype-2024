@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Logic.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query;
 using Shared.DAO;
 
 namespace WebApi.Controller;
@@ -16,10 +17,10 @@ public class ItemController : ControllerBase
     }
     [HttpPost]
     public async Task<ActionResult<Item>> CreateAsync([FromBody]CreateItemDAO dto) {
-        try {
-            Console.WriteLine(dto);
+        try
+        {
             Item item = await _itemLogic.CreateAsyncItem(dto);
-            return Created($"/item/{item.ItemId}", item);
+            return Created($"/item", item);
         }
         catch (Exception e) {
             Console.WriteLine(e);

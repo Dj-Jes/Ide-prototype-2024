@@ -20,12 +20,6 @@ public class Item
     [Required]
     public bool IsTaken { get; set; }
 
-    public Item(CreateItemDAO createItemDao)
-    {
-        Weight = createItemDao.Weight;
-        SoteringCategory = createItemDao.SoteringCategory;
-        Type = createItemDao.Type;
-        IsTaken = createItemDao.IsTaken;
-    }
+
     
 }

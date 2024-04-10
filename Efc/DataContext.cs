@@ -24,12 +24,10 @@ public class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string dbFileName = "DataBase.db";
-        string dbPath = Path.Combine("..", "..", "..", "Data", dbFileName);
+        string dbPath = Path.Combine("..", "..", "..","..","Efc", "Data", dbFileName);
         string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
         string fullDbPath = Path.GetFullPath(Path.Combine(currentDirectory, dbPath));
-
         optionsBuilder.UseSqlite($"Data Source={fullDbPath}");
-        Console.WriteLine(fullDbPath);
     }
 
 
