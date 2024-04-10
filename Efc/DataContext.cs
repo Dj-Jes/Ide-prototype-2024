@@ -5,8 +5,8 @@ namespace Efc;
 
 public class DataContext : DbContext
 {
-    public DbSet<Drink> Drinks { get; set; }
-    public DbSet<DrinksMenu> DrinkMenus { get; set; }
+    public DbSet<Item> Items { get; set; }
+   // public DbSet<DrinksMenu> DrinkMenus { get; set; }
 
     public string DbPath { get; }
 
@@ -35,7 +35,7 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Drink>().HasKey(d => d.DrinkId);
-        modelBuilder.Entity<DrinksMenu>().HasKey(dm => dm.DrinkMenuId);
+        modelBuilder.Entity<Item>().HasKey(d => d.ItemId);
+       // modelBuilder.Entity<DrinksMenu>().HasKey(dm => dm.DrinkMenuId);
     }
 }
