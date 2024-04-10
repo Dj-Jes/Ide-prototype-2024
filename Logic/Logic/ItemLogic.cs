@@ -16,7 +16,11 @@ public class ItemLogic :IItemLogic
     
     public async Task<Item> CreateAsyncItem(CreateItemDAO createItemDao)
     {
-        Item item = new Item(createItemDao);
+        Item item = new Item();
+        item.Type = createItemDao.Type;
+        item.Weight = createItemDao.Weight;
+        item.SoteringCategory = createItemDao.SoteringCategory;
+        item.IsTaken = false;
 
         return await _dataAccess.CreateItem(item);
     }
