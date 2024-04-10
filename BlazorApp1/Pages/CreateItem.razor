@@ -1,0 +1,69 @@
+﻿@page "/CreateItem"
+<h3>CreateItem</h3>
+
+@using Data.Entities
+@using BlazorApp1.HttpClient.ItemHttpClient
+@using Shared.DAO
+@inject IItemHttpClient ItemService
+
+<style>
+    .item-form{
+        font-size: 18px;
+        color: black;
+       border-bottom: 1px solid black;
+    }
+</style>
+
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        Item has been Added!
+    </div>
+}
+
+
+<MudCard Outlined="true">
+
+    <EditForm Model="_item" OnValidSubmit="HandleValidSubmit">
+        @* <DataAnnotationsValidator/> *@
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCard Outlined="true">
+                    <MudCardContent>
+                        <MudTextField Label="Weight" @bind-Value="_item.Weight" For="@(() => _item.Weight)" Class="item-form"/>
+                        <MudTextField Label="Type" @bind-Value="_item.Type" For="@(() => _item.Type)" Class="item-form"/>
+                        <MudTextField Label="Category " @bind-Value="_item.SoteringCategory" For="@(() => _item.SoteringCategory)" Class="item-form"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">create case</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+
+@code {
+    private Item _item = new Item();
+    private bool _successMessage = false;
+    
+    private async void HandleValidSubmit()
+    {
+        CreateItemDAO itemDao = new CreateItemDAO();
+        
+        itemDao.Type = _item.Type;
+        itemDao.Weight = _item.Weight;
+        itemDao.SoteringCategory = _item.SoteringCategory;
+        
+        _item = await ItemService.CreateItem(itemDao);
+      
+        
+       
+      
+        _successMessage = true;
+        await Task.Delay(5000);
+        
+        StateHasChanged();
+    }
+}
