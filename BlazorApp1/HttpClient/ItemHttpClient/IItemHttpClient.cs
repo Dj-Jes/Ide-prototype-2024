@@ -5,5 +5,5 @@ namespace BlazorApp1.HttpClient.ItemHttpClient;
 
 public interface IItemHttpClient
 {
-    Task<Item> CreateItem(CreateItemDAO item);
+    public Task<Item> CreateItem (CreateItemDAO item);
 }
