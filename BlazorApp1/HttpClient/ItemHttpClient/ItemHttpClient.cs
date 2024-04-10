@@ -18,11 +18,13 @@ public class ItemHttpClient : IItemHttpClient
 
     public async Task<Item> CreateItem(CreateItemDAO itemDao)
     {
-        HttpResponseMessage response = await client.PostAsJsonAsync("/Item", itemDao);
+        HttpResponseMessage response = await client.PostAsJsonAsync("/item", itemDao);
+        
         string result = await response.Content.ReadAsStringAsync();
-        if (response.IsSuccessStatusCode)
+
+        if (!response.IsSuccessStatusCode)
         {
-            throw new Exception(result);
+            throw new Exception(result); 
         }
 
         Item item = JsonSerializer.Deserialize<Item>(result, new JsonSerializerOptions
@@ -31,5 +33,6 @@ public class ItemHttpClient : IItemHttpClient
         })!;
         return item;
     }
+
     
 }
