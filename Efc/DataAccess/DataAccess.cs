@@ -26,6 +26,15 @@ public class DataAccess : IDataAccess
         await _dataContext.SaveChangesAsync();
         return item;
     }
+
+    public async Task<Item> RemovedItem(int id)
+    {
+        Item choosenItem = await _dataContext.Items.Where(item => item.ItemId == id).FirstAsync();
+
+        choosenItem.IsTaken = true;
+        await _dataContext.SaveChangesAsync();
+        return choosenItem;
+    }
 /*
     public async Task<DrinksMenu> AddDrinkToDrinkMenu(int drinksMenuId, int drinkId)
     {
