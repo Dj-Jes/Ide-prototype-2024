@@ -1,21 +1,50 @@
-﻿    @page "/RemoveItem"
+﻿@page "/RemoveItem"
+<h3>Remove Item</h3>
+
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
 
-<PageTitle>RemoveItem</PageTitle>
+<head>
+    <link rel="stylesheet" href="css/Styles.css">
+</head>
 
-<h1>Remove Item</h1>
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        Item has been Taken!
+    </div>
+}
 
-<label>Item Id:</label>
-<input type="text" @bind="ItemID" @bind:event="oninput"/>
+<form class="item-form" @onsubmit="HandleDelite">
+    <label>Item Id:</label>
+    <input type="text" @bind="ItemID" @bind:event="oninput"/>
 
-        <button @onclick="Delete" type="submit" class="acceptbtn">take</button>
+    <button type="submit" class="btn btn-primary">Take item</button>
+
+</form>
+
 @code {
     private int ItemID = 0;
-
-    private void Delete()
+    private bool _successMessage = false;
+    
+    // set itemId back to 0 after sucessfully taken.
+    private void ResetItemID()
     {
-        ItemService.TakeItem(ItemID);
+        ItemID = 0;
+    }
+
+    private async Task HandleDelite()
+    {
+        await ItemService.TakeItem(ItemID);
+        Console.WriteLine(ItemID.ToString());
+        ResetItemID();
+        
+        _successMessage = true;
+        StateHasChanged();
+        await Task.Delay(5000);
+        _successMessage = false;
+        StateHasChanged();
+
     }
 
 }

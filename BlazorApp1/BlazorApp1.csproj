@@ -16,4 +16,8 @@
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Overlay.razor" />
+    </ItemGroup>
+
 </Project>

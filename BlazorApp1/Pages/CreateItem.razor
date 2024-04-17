@@ -5,20 +5,16 @@
 @using Shared.DAO
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
+@using System.ComponentModel.DataAnnotations;
 
-
-<style>
-    .item-form {
-        font-size: 18px;
-        color: black;
-        border-bottom: 1px solid black;
-    }
-</style>
+<head>
+    <link rel="stylesheet" href="css/Styles.css">
+</head>
 
 @if (_successMessage)
 {
     <div class="alert alert-success" role="alert">
-        Item has been Added!
+        @_message
     </div>
 }
 
@@ -28,29 +24,39 @@
         <input type="text" class="form-control" id="type" @bind-value="@_item.Type" required>
     </div>
     <div class="form-group">
-        <label for="weight">Weight:</label>
-        <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" required>
+        <label for="weight">Weight kg:</label>
+        <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" step="0.001" required min="0.001">
+        <div class="invalid-feedback">Weight must be a positive number greater than or equal to 0.001.</div>
     </div>
     <div class="form-group">
         <labe for="sortingCategory">Sorting Category:</labe>
     </div>
     <div class="form-group">
-    <InputSelect @bind-Value="_item.SoteringCategory">
-        @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
-        {
-            <option value="@category">@category.ToString()</option>
-        }
+        <InputSelect @bind-Value="_item.SoteringCategory">
+            @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
+            {
+                <option value="@category">@category.ToString()</option>
+            }
 
-    </InputSelect>
+        </InputSelect>
     </div>
-    <button type="submit" class="btn btn-primary">Create Item</button>
-    <div></div>
+    <div class="button-style">
+        <button type="submit" class="btn btn-primary">Create Item</button>
+    </div>
 </form>
 
 
 @code {
     private Item _item = new Item();
     private bool _successMessage = false;
+    private string _message;
+    
+    private void ResetForm()
+    {
+        _item.Type = "";
+        _item.Weight = 0;
+        _item.SoteringCategory = SorteringCategory.HardPlast;
+    }
 
     private async Task HandleValidSubmit()
     {
@@ -62,10 +68,12 @@
 
         _item = await ItemService.CreateItem(itemDao);
 
+        _message = "Item created successfully";
         _successMessage = true;
+        ResetForm();
+        StateHasChanged();
         await Task.Delay(5000);
         _successMessage = false;
-
         StateHasChanged();
     }
 
