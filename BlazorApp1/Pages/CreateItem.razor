@@ -15,6 +15,13 @@
     }
 </style>
 
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        Item has been Added!
+    </div>
+}
+
 <form class="item-form" @onsubmit="HandleValidSubmit">
     <div class="form-group">
         <label for="type">Type:</label>
@@ -37,15 +44,9 @@
     </InputSelect>
     </div>
     <button type="submit" class="btn btn-primary">Create Item</button>
+    <div></div>
 </form>
 
-
-@if (_successMessage)
-{
-    <div class="alert alert-success" role="alert">
-        Item has been Added!
-    </div>
-}
 
 @code {
     private Item _item = new Item();
