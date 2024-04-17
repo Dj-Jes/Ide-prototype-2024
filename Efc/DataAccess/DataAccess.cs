@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Efc;
 using Microsoft.EntityFrameworkCore;
+using Shared.DAO;
 
 namespace Data.DataAccess;
 
@@ -35,6 +36,24 @@ public class DataAccess : IDataAccess
         choosenItem.TakenDate = today;
         await _dataContext.SaveChangesAsync();
         return choosenItem;
+    }
+
+    public async Task<List<Item>> GetAllItems(GetItemsDAO dao)
+    {
+        IQueryable<Item> itemquery =   _dataContext.Items.AsQueryable();
+        if (dao.IsTaken!=null)
+        {
+             itemquery = itemquery.Where(item => item.IsTaken == dao.IsTaken); 
+        }
+
+        if (dao.SorteringCategory!=null)
+        {
+            itemquery = itemquery.Where(item => item.SoteringCategory == dao.SorteringCategory);
+        }
+
+        List<Item> items = await itemquery.ToListAsync();
+
+        return items;
     }
 /*
     public async Task<DrinksMenu> AddDrinkToDrinkMenu(int drinksMenuId, int drinkId)
