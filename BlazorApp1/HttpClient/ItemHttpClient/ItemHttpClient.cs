@@ -50,5 +50,40 @@ public class ItemHttpClient : IItemHttpClient
         })!;
         return item;
     }
-    
+
+    public async Task<List<Item>> GetItem(GetItemsDAO dao)
+    {
+        string added = ConstrunctQuery(dao.IsTaken, dao.SorteringCategory);
+        HttpResponseMessage response = await client.GetAsync($"/Item"+ added);
+        string result = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(result); 
+        }
+
+        List<Item> items = JsonSerializer.Deserialize<List<Item>>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
+        return items;
+    }
+
+    private static string ConstrunctQuery(bool? IsTaken, SorteringCategory? sorteringCategory)
+    {
+        string query = "";
+        if (IsTaken != null)
+        {
+            query += string.IsNullOrEmpty(query) ? "?" : "&";
+            query += $"isTaken={IsTaken}";
+        }
+
+        if (sorteringCategory != null)
+        {
+            query += string.IsNullOrEmpty(query) ? "?" : "&";
+            query += $"sorteringCategory={IsTaken}";
+        }
+
+        return query;
+    }
 }

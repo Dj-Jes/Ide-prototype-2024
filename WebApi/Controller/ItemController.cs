@@ -43,10 +43,13 @@ public class ItemController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Item>>> GetItems([FromBody]GetItemsDAO dao)
+    public async Task<ActionResult<List<Item>>> GetItems([FromQuery]bool? isTaken, [FromQuery] SorteringCategory? sorteringCategory)
     {
         try
         {
+            GetItemsDAO dao = new GetItemsDAO();
+            dao.IsTaken = isTaken;
+            dao.SorteringCategory = sorteringCategory;
             List<Item> item = await _itemLogic.GetAllItem(dao);
             return Created($"/item", item);
         }
