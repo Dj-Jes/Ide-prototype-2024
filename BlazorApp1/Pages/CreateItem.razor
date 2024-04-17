@@ -5,7 +5,8 @@
 @using Shared.DAO
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
- 
+@using System.ComponentModel.DataAnnotations;
+
 <head>
     <link rel="stylesheet" href="css/Styles.css">
 </head>
@@ -13,7 +14,7 @@
 @if (_successMessage)
 {
     <div class="alert alert-success" role="alert">
-        Item has been Added!
+        @_message
     </div>
 }
 
@@ -24,7 +25,8 @@
     </div>
     <div class="form-group">
         <label for="weight">Weight kg:</label>
-        <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" required>
+        <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" step="0.001" required min="0.001">
+        <div class="invalid-feedback">Weight must be a positive number greater than or equal to 0.001.</div>
     </div>
     <div class="form-group">
         <labe for="sortingCategory">Sorting Category:</labe>
@@ -47,6 +49,14 @@
 @code {
     private Item _item = new Item();
     private bool _successMessage = false;
+    private string _message;
+    
+    private void ResetForm()
+    {
+        _item.Type = "";
+        _item.Weight = 0;
+        _item.SoteringCategory = SorteringCategory.HardPlast;
+    }
 
     private async Task HandleValidSubmit()
     {
@@ -58,10 +68,12 @@
 
         _item = await ItemService.CreateItem(itemDao);
 
+        _message = "Item created successfully";
         _successMessage = true;
+        ResetForm();
+        StateHasChanged();
         await Task.Delay(5000);
         _successMessage = false;
-
         StateHasChanged();
     }
 
