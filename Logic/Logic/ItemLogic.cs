@@ -24,4 +24,10 @@ public class ItemLogic :IItemLogic
 
         return await _dataAccess.CreateItem(item);
     }
+
+    public async Task<Item> RemovedAsyncItem(int removedItemID)
+    {
+        Item item = await _dataAccess.RemovedItem(removedItemID);
+        return item;
+    }
 }
