@@ -1,0 +1,21 @@
+﻿    @page "/RemoveItem"
+@using BlazorApp1.HttpClient.ItemHttpClient
+@inject IItemHttpClient ItemService
+
+<PageTitle>RemoveItem</PageTitle>
+
+<h1>Remove Item</h1>
+
+<label>Item Id:</label>
+<input type="text" @bind="ItemID" @bind:event="oninput"/>
+
+        <button @onclick="Delete" type="submit" class="acceptbtn">take</button>
+@code {
+    private int ItemID = 0;
+
+    private void Delete()
+    {
+        ItemService.TakeItem(ItemID);
+    }
+
+}
