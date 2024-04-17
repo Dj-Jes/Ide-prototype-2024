@@ -5,8 +5,8 @@ namespace Efc;
 
 public class DataContext : DbContext
 {
-    public DbSet<Drink> Drinks { get; set; }
-    public DbSet<DrinksMenu> DrinkMenus { get; set; }
+    public DbSet<Item> Items { get; set; }
+   // public DbSet<DrinksMenu> DrinkMenus { get; set; }
 
     public string DbPath { get; }
 
@@ -24,18 +24,16 @@ public class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string dbFileName = "DataBase.db";
-        string dbPath = Path.Combine("..", "..", "..", "Data", dbFileName);
+        string dbPath = Path.Combine("..", "..", "..","..","Efc", "Data", dbFileName);
         string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
         string fullDbPath = Path.GetFullPath(Path.Combine(currentDirectory, dbPath));
-
         optionsBuilder.UseSqlite($"Data Source={fullDbPath}");
-        Console.WriteLine(fullDbPath);
     }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Drink>().HasKey(d => d.DrinkId);
-        modelBuilder.Entity<DrinksMenu>().HasKey(dm => dm.DrinkMenuId);
+        modelBuilder.Entity<Item>().HasKey(d => d.ItemId);
+       // modelBuilder.Entity<DrinksMenu>().HasKey(dm => dm.DrinkMenuId);
     }
 }
