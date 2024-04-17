@@ -1,0 +1,15 @@
+﻿.item-form {
+    font-size: 18px;
+    color: black;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+.form-group {
+    width: 30%;
+    padding-bottom: 10px;
+
+}
+.button-style {
+    padding-top: 10px;
+    float: right;
+}

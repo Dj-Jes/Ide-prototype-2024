@@ -5,15 +5,10 @@
 @using Shared.DAO
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
-
-
-<style>
-    .item-form {
-        font-size: 18px;
-        color: black;
-        border-bottom: 1px solid black;
-    }
-</style>
+ 
+<head>
+    <link rel="stylesheet" href="css/Styles.css">
+</head>
 
 @if (_successMessage)
 {
@@ -28,23 +23,24 @@
         <input type="text" class="form-control" id="type" @bind-value="@_item.Type" required>
     </div>
     <div class="form-group">
-        <label for="weight">Weight:</label>
+        <label for="weight">Weight kg:</label>
         <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" required>
     </div>
     <div class="form-group">
         <labe for="sortingCategory">Sorting Category:</labe>
     </div>
     <div class="form-group">
-    <InputSelect @bind-Value="_item.SoteringCategory">
-        @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
-        {
-            <option value="@category">@category.ToString()</option>
-        }
+        <InputSelect @bind-Value="_item.SoteringCategory">
+            @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
+            {
+                <option value="@category">@category.ToString()</option>
+            }
 
-    </InputSelect>
+        </InputSelect>
     </div>
-    <button type="submit" class="btn btn-primary">Create Item</button>
-    <div></div>
+    <div class="button-style">
+        <button type="submit" class="btn btn-primary">Create Item</button>
+    </div>
 </form>
 
 

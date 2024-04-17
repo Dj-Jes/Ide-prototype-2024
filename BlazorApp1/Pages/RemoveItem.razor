@@ -1,21 +1,40 @@
-﻿    @page "/RemoveItem"
+﻿@page "/RemoveItem"
+<h3>Remove Item</h3>
+
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
 
-<PageTitle>RemoveItem</PageTitle>
+<head>
+    <link rel="stylesheet" href="css/Styles.css">
+</head>
 
-<h1>Remove Item</h1>
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        Item has been Added!
+    </div>
+}
 
+<form>
 <label>Item Id:</label>
 <input type="text" @bind="ItemID" @bind:event="oninput"/>
 
-        <button @onclick="Delete" type="submit" class="acceptbtn">take</button>
+<button @onclick="Delete" type="submit" class="acceptbtn">take</button>
+
+</form>
 @code {
     private int ItemID = 0;
+    private bool _successMessage = false;
 
-    private void Delete()
+    private  async Task Delete()
     {
-        ItemService.TakeItem(ItemID);
+        await ItemService.TakeItem(ItemID);
+
+        // _successMessage = true;
+        // await Task.Delay(5000);
+        // _successMessage = false;
+        //
+        // StateHasChanged();
     }
 
 }
