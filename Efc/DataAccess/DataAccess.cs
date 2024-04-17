@@ -27,11 +27,12 @@ public class DataAccess : IDataAccess
         return item;
     }
 
-    public async Task<Item> RemovedItem(int id)
+    public async Task<Item> RemovedItem(int id, DateTime today)
     {
         Item choosenItem = await _dataContext.Items.Where(item => item.ItemId == id).FirstAsync();
-
+    
         choosenItem.IsTaken = true;
+        choosenItem.TakenDate = today;
         await _dataContext.SaveChangesAsync();
         return choosenItem;
     }

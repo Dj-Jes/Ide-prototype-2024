@@ -34,5 +34,21 @@ public class ItemHttpClient : IItemHttpClient
         return item;
     }
 
+    public async Task<Item> TakeItem(int itemID)
+    {
+        HttpResponseMessage response = await client.DeleteAsync($"Item/{itemID}");
+        string result = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(result); 
+        }
+
+        Item item = JsonSerializer.Deserialize<Item>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
+        return item;
+    }
     
 }

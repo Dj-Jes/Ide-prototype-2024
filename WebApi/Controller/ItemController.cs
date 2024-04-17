@@ -28,12 +28,13 @@ public class ItemController : ControllerBase
         }
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Item>> RemoveItemAsync([FromBody] int itemID)
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<Item>> RemoveItemAsync([FromRoute] int id)
     {
         try
         {
-            Item item = await _itemLogic.RemovedAsyncItem(itemID);
+            Console.WriteLine(id);
+            Item item = await _itemLogic.RemovedAsyncItem(id);
             return Created($"/item", item);
         }
         catch (Exception e) {

@@ -19,6 +19,7 @@ public class ItemLogic :IItemLogic
         Item item = new Item();
         item.Type = createItemDao.Type;
         item.Weight = createItemDao.Weight;
+        item.CreatedDate = DateTime.Today;
         item.SoteringCategory = createItemDao.SoteringCategory;
         item.IsTaken = false;
 
@@ -26,8 +27,9 @@ public class ItemLogic :IItemLogic
     }
 
     public async Task<Item> RemovedAsyncItem(int removedItemID)
-    {
-        Item item = await _dataAccess.RemovedItem(removedItemID);
+    {  
+        DateTime today = DateTime.Today;
+        Item item = await _dataAccess.RemovedItem(removedItemID, today);
         return item;
     }
 }
