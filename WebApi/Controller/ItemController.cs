@@ -25,7 +25,20 @@ public class ItemController : ControllerBase
         catch (Exception e) {
             Console.WriteLine(e);
             return StatusCode(500, e.Message);
-            
+        }
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<Item>> RemoveItemAsync([FromBody] int itemID)
+    {
+        try
+        {
+            Item item = await _itemLogic.RemovedAsyncItem(itemID);
+            return Created($"/item", item);
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
         }
     }
 }
