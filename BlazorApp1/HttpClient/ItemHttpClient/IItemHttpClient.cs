@@ -7,4 +7,5 @@ public interface IItemHttpClient
 {
     public Task<Item> CreateItem (CreateItemDAO item);
     public Task<Item> TakeItem(int ItemID);
+    public Task<List<Item>> GetItem(GetItemsDAO dao);
 }
