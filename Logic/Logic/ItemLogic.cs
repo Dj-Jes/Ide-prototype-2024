@@ -32,4 +32,9 @@ public class ItemLogic :IItemLogic
         Item item = await _dataAccess.RemovedItem(removedItemID, today);
         return item;
     }
+
+    public async Task<List<Item>> GetAllItem()
+    {
+        return await _dataAccess.GetAllItems();
+    }
 }

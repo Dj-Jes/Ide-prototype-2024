@@ -33,8 +33,21 @@ public class ItemController : ControllerBase
     {
         try
         {
-            Console.WriteLine(id);
             Item item = await _itemLogic.RemovedAsyncItem(id);
+            return Created($"/item", item);
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<Item>>> GetItems()
+    {
+        try
+        {
+            List<Item> item = await _itemLogic.GetAllItem();
             return Created($"/item", item);
         }
         catch (Exception e) {

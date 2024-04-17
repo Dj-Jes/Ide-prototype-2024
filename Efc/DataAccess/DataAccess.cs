@@ -36,6 +36,14 @@ public class DataAccess : IDataAccess
         await _dataContext.SaveChangesAsync();
         return choosenItem;
     }
+
+    public async Task<List<Item>> GetAllItems()
+    {
+        IQueryable<Item> query =  _dataContext.Items.AsQueryable();
+
+        List<Item> items = await query.ToListAsync();
+        return items;
+    }
 /*
     public async Task<DrinksMenu> AddDrinkToDrinkMenu(int drinksMenuId, int drinkId)
     {

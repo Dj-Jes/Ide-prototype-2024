@@ -7,6 +7,8 @@ public interface IDataAccess
     public Task<Item> CreateItem(Item item);
 
     public Task<Item> RemovedItem(int id, DateTime today);
+
+    public Task<List<Item>> GetAllItems();
     /*
     public Task<DrinksMenu> CreateDrinksMenu(DrinksMenu drinksMenu);
     public Task<DrinksMenu> AddDrinkToDrinkMenu(int drinksMenuId, int drinkId);
