@@ -1,18 +1,44 @@
 ﻿@page "/CreateItem"
-<h3>CreateItem</h3>
+<h3>Create Item</h3>
 
 @using Data.Entities
-@using BlazorApp1.HttpClient.ItemHttpClient
 @using Shared.DAO
+@using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
 
+
 <style>
-    .item-form{
+    .item-form {
         font-size: 18px;
         color: black;
-       border-bottom: 1px solid black;
+        border-bottom: 1px solid black;
     }
 </style>
+
+<form class="item-form" @onsubmit="HandleValidSubmit">
+    <div class="form-group">
+        <label for="type">Type:</label>
+        <input type="text" class="form-control" id="type" @bind-value="@_item.Type" required>
+    </div>
+    <div class="form-group">
+        <label for="weight">Weight:</label>
+        <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" required>
+    </div>
+    <div class="form-group">
+        <labe for="sortingCategory">Sorting Category:</labe>
+    </div>
+    <div class="form-group">
+    <InputSelect @bind-Value="_item.SoteringCategory">
+        @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
+        {
+            <option value="@category">@category.ToString()</option>
+        }
+
+    </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Item</button>
+</form>
+
 
 @if (_successMessage)
 {
@@ -21,49 +47,25 @@
     </div>
 }
 
-
-<MudCard Outlined="true">
-
-    <EditForm Model="_item" OnValidSubmit="HandleValidSubmit">
-        @* <DataAnnotationsValidator/> *@
-        <MudGrid>
-            <MudItem xs="12" sm="7">
-                <MudCard Outlined="true">
-                    <MudCardContent>
-                        <MudTextField Label="Weight" @bind-Value="_item.Weight" For="@(() => _item.Weight)" Class="item-form"/>
-                        <MudTextField Label="Type" @bind-Value="_item.Type" For="@(() => _item.Type)" Class="item-form"/>
-                        <MudTextField Label="Category " @bind-Value="_item.SoteringCategory" For="@(() => _item.SoteringCategory)" Class="item-form"/>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">create case</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
-    </EditForm>
-</MudCard>
-
-
 @code {
     private Item _item = new Item();
     private bool _successMessage = false;
-    
-    private async void HandleValidSubmit()
+
+    private async Task HandleValidSubmit()
     {
         CreateItemDAO itemDao = new CreateItemDAO();
-        
+
         itemDao.Type = _item.Type;
         itemDao.Weight = _item.Weight;
         itemDao.SoteringCategory = _item.SoteringCategory;
-        
+
         _item = await ItemService.CreateItem(itemDao);
-      
-        
-       
-      
+
         _successMessage = true;
         await Task.Delay(5000);
-        
+        _successMessage = false;
+
         StateHasChanged();
     }
+
 }
