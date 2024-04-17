@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Efc;
 using Microsoft.EntityFrameworkCore;
+using Shared.DAO;
 
 namespace Data.DataAccess;
 
@@ -37,11 +38,21 @@ public class DataAccess : IDataAccess
         return choosenItem;
     }
 
-    public async Task<List<Item>> GetAllItems()
+    public async Task<List<Item>> GetAllItems(GetItemsDAO dao)
     {
-        IQueryable<Item> query =  _dataContext.Items.AsQueryable();
+        IQueryable<Item> itemquery =   _dataContext.Items.AsQueryable();
+        if (dao.IsTaken!=null)
+        {
+             itemquery = itemquery.Where(item => item.IsTaken == dao.IsTaken); 
+        }
 
-        List<Item> items = await query.ToListAsync();
+        if (dao.SorteringCategory!=null)
+        {
+            itemquery = itemquery.Where(item => item.SoteringCategory == dao.SorteringCategory);
+        }
+
+        List<Item> items = await itemquery.ToListAsync();
+
         return items;
     }
 /*

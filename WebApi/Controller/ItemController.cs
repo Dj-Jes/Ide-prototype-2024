@@ -43,11 +43,11 @@ public class ItemController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Item>>> GetItems()
+    public async Task<ActionResult<List<Item>>> GetItems([FromBody]GetItemsDAO dao)
     {
         try
         {
-            List<Item> item = await _itemLogic.GetAllItem();
+            List<Item> item = await _itemLogic.GetAllItem(dao);
             return Created($"/item", item);
         }
         catch (Exception e) {

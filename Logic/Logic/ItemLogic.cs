@@ -33,8 +33,8 @@ public class ItemLogic :IItemLogic
         return item;
     }
 
-    public async Task<List<Item>> GetAllItem()
+    public async Task<List<Item>> GetAllItem(GetItemsDAO dao)
     {
-        return await _dataAccess.GetAllItems();
+        return await _dataAccess.GetAllItems(dao);
     }
 }
