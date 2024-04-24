@@ -1,0 +1,73 @@
+﻿@page "/Catalog"
+@using Shared.DAO
+@using BlazorApp1.HttpClient.ItemHttpClient
+@using Data.Entities
+@inject IItemHttpClient ItemService
+<h3>Catalog</h3>
+
+<h3 style="text-align: center">Overview of all Items</h3>
+
+<style>
+    .user-card {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        display: inline-block;
+        margin: 25px;
+        padding: 15px;
+        border-radius: 10px;
+    }
+</style>
+
+
+@if (Items == null)
+{
+    <span>Loading..</span>
+}
+else if (!Items.Any())
+{
+    <span>No users to be found</span>
+}
+else
+{
+    <div class="users-container">
+        @foreach (Item item in Items)
+        {
+            <div class="user-card">
+                <div>
+                    <label>ID: @item.ItemId</label>
+                </div>
+                <div>
+                    <label>Product: @item.Type</label>
+                </div>
+                <div>
+                    <label>Category: @item.SoteringCategory</label>
+                </div>
+                <div>
+                    <label>Weight: @item.Weight kg</label>
+                </div>
+                <div>
+                    <label>Received: @item.CreatedDate.Day/@item.CreatedDate.Month/@item.CreatedDate.Year</label>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    public List<Item> Items { get; set; } = new List<Item>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetItems();
+    }
+
+    private async Task GetItems()
+    {
+        GetItemsDAO _items = new GetItemsDAO();
+        _items.IsTaken = false;
+        Items = await ItemService.GetItem(_items);
+    }
+
+}
+
