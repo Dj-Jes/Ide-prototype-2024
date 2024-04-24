@@ -21,7 +21,7 @@
 <form class="item-form" @onsubmit="HandleValidSubmit">
     <div class="form-group">
         <label for="type">Type:</label>
-        <input type="text" class="form-control" id="type" @bind-value="@_item.Type" required>
+        <input type="text" class="form-control" id="type" @bind-value="@_item.Type">
     </div>
     <div class="form-group">
         <label for="weight">Weight kg:</label>
@@ -60,9 +60,11 @@
 
     private async Task HandleValidSubmit()
     {
-        CreateItemDAO itemDao = new CreateItemDAO();
-
+        CreateItemDAO itemDao = new CreateItemDAO(); 
+        
         itemDao.Type = _item.Type;
+        itemDao.Type ??= "";
+
         itemDao.Weight = _item.Weight;
         itemDao.SoteringCategory = _item.SoteringCategory;
 
