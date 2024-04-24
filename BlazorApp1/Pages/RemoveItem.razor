@@ -12,6 +12,8 @@
 {
     <div class="alert alert-success" role="alert">
         Item has been Taken!
+        <br/>
+        You have now helped to recycle @_goodWillPoints kg of Co2.
     </div>
 }
 
@@ -26,25 +28,18 @@
     <form class="item-form" @onsubmit="HandleDelite">
         <div class="form-group">
             <label for="itemId">Item ID:</label>
-            <input type="text" class="form-control" @bind="ItemID" @bind:event="oninput" placeholder="Enter item ID (for display only)">
+            <input type="text" class="form-control" @bind="ItemID" @bind:event="oninput" placeholder="Enter item ID">
         </div>
         <div class="button-style">
             <button type="submit" class="btn btn-primary">Take</button>
         </div>
     </form>
 </div>
-@* *@
-@* <form class="item-form" @onsubmit="HandleDelite"> *@
-@*     <label>Item Id:</label> *@
-@*     <input type="text" @bind="ItemID" @bind:event="oninput"/> *@
-@* *@
-@*     <button type="submit" class="btn btn-primary">Take item</button> *@
-@* *@
-@* </form> *@
 
 @code {
     private int ItemID = 0;
     private bool _successMessage = false;
+    private decimal _goodWillPoints;
 
     // set itemId back to 0 after sucessfully taken.
     private void ResetItemID()
@@ -54,10 +49,10 @@
 
     private async Task HandleDelite()
     {
-        await ItemService.TakeItem(ItemID);
-        Console.WriteLine(ItemID.ToString());
+        var itemToDelete = await ItemService.TakeItem(ItemID);
+        _goodWillPoints = itemToDelete.Weight;
         ResetItemID();
-
+        
         _successMessage = true;
         StateHasChanged();
         await Task.Delay(5000);

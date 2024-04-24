@@ -3,6 +3,7 @@
 @using BlazorApp1.HttpClient.ItemHttpClient
 @using Data.Entities
 @using Shared.DAO
+@using BlazorApp1.components
 @inject IItemHttpClient ItemService
 @inject IJSRuntime JSRuntime
 
@@ -53,9 +54,10 @@
         </tbody>
     </table>
 }
-<div>
-    <canvas id="myChart" width="400" height="200"></canvas>
-</div>
+@if (CurrentYearCounts.Count > 0 || PreviousYearCounts.Count > 0)
+{
+    <Graph CurrentData="CurrentYearCounts" PreviousData="PreviousYearCounts"></Graph>
+}
 
 @code {
     public class MonthlyCount
@@ -64,8 +66,11 @@
         public decimal Count { get; set; }
     }
 
+    [Parameter]
     public List<MonthlyCount> CurrentYearCounts { get; set; } = new List<MonthlyCount>();
+    [Parameter]
     public List<MonthlyCount> PreviousYearCounts { get; set; } = new List<MonthlyCount>();
+    
     public List<Item> Items { get; set; } = new List<Item>();
     
     public DateTime currentDate = DateTime.Now;
@@ -76,24 +81,9 @@
     {
         await GetItems();
         CalculateStats();
-
-        // Ensure CurrentYearCounts and PreviousYearCounts are populated
-        if (CurrentYearCounts.Count == 0 || PreviousYearCounts.Count == 0)
-        {
-            // Handle the case where data is not available
-            return;
-        }
-
-        try
-        {
-            await JSRuntime.InvokeAsync<object>("drawGraph", CurrentYearCounts, PreviousYearCounts);
-        }
-        catch (JSException e)
-        {
-            // Handle errors from drawGraph function (optional)
-            Console.WriteLine("Error calling drawGraph:", e.Message);
-        }
+        
     }
+    
 
     private async Task GetItems()
     {
@@ -138,4 +128,6 @@
     {
         return new DateTime(2024, month, 1).ToString("MMMM");
     }
+
+   
 }

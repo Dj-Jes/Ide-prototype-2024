@@ -1,4 +1,4 @@
-﻿function drawGraph(currentData, previousData) {
+﻿export function drawGraph(currentData, previousData) {
     const canvas = document.getElementById('myChart');
     const ctx = canvas.getContext('2d');
 

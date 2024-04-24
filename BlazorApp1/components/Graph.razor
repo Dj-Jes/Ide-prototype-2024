@@ -1,0 +1,86 @@
+﻿@using BlazorApp1.Pages
+@inject IJSRuntime JS
+
+<h3>Graph</h3>
+
+<div>
+    <canvas id="myChart" width="400" height="200"></canvas>
+</div>
+
+@code {
+    [Parameter]
+    public List<Stats.MonthlyCount> CurrentData { get; set; }
+    [Parameter]
+    public List<Stats.MonthlyCount> PreviousData { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CurrentData != null && CurrentData.Count > 0 && PreviousData != null)
+        {
+            await DrawGraph();
+        }
+    }
+
+    private async Task DrawGraph()
+    {
+        await JS.InvokeVoidAsync("drawGraph", CurrentData, PreviousData);
+    }
+}
+
+<script>
+function drawGraph(currentData, previousData) {
+  const canvas = document.getElementById('myChart');
+  const ctx = canvas.getContext('2d');
+
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Handle cases with empty data or single element
+  if (!currentData || !currentData.length) {
+    return; // Handle no data scenario (e.g., display a message)
+  }
+
+  // Define chart dimensions and margins (adjust if needed)
+  const chartWidth = canvas.width - 50;
+  const chartHeight = canvas.height - 50;
+  const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
+  const margin = 20;
+
+  // Set colors for current and previous year data
+  const currentColor = 'blue';
+  const previousColor = 'gray';
+
+  // Loop through each month data (considering single element)
+  for (let i = 0; i < currentData.length; i++) {
+    console.log("Current data:", currentData[i]); // Log for debugging
+
+    const month = currentData[i].Month || 0; // Set to 0 if undefined (assuming Month is an int)
+    const currentCount = currentData[i].Count || 0; // Set to 0 if undefined (assuming Count is a decimal)
+
+    // Find previous year data (handle potential absence)
+    const previousCount = previousData.find(d => d.Month === month)?.Count || 0;
+
+    // Calculate bar positions
+    const currentBarX = (barWidth * i) + margin;
+    const previousBarX = currentBarX + barWidth / 2;
+
+    // Draw bars for current and previous years
+    ctx.fillStyle = currentColor;
+    ctx.fillRect(currentBarX, chartHeight - currentCount, barWidth / 2, currentCount);
+    ctx.fillStyle = previousColor;
+    ctx.fillRect(previousBarX, chartHeight - previousCount, barWidth / 2, previousCount);
+
+    // Draw month labels on x-axis
+    ctx.font = '12px Arial';
+    ctx.fillStyle = 'black';
+    ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 15);
+  }
+}
+
+
+function GetMonthName(month) {
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    return monthNames[month - 1];
+}
+</script>
