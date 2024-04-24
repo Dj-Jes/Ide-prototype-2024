@@ -15,16 +15,29 @@
 {
     <div class="alert alert-success" role="alert">
         @_message
+        <p>Your item have number : @_id</p>
     </div>
 }
 
+
+<div class="col-md-6">
+    <p>To create a new item, follow these steps:</p>
+    <ol>
+        <li>Enter the item name in the "Product" box.</li>
+        <li>Specify the item's weight in kilograms (kg) in the "Weight" box.</li>
+        <li>Select the appropriate sorting type from the "Sorting Type" dropdown menu.</li>
+        <li>Click the "Create Item" button to create the item.</li>
+    </ol>
+
+
+
 <form class="item-form" @onsubmit="HandleValidSubmit">
     <div class="form-group">
-        <label for="type">Type:</label>
+        <label for="type">Product:</label>
         <input type="text" class="form-control" id="type" @bind-value="@_item.Type">
     </div>
     <div class="form-group">
-        <label for="weight">Weight kg:</label>
+        <label for="weight">Weight (kg):</label>
         <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" step="0.001" required min="0.001">
         <div class="invalid-feedback">Weight must be a positive number greater than or equal to 0.001.</div>
     </div>
@@ -44,13 +57,14 @@
         <button type="submit" class="btn btn-primary">Create Item</button>
     </div>
 </form>
-
+</div>
 
 @code {
     private Item _item = new Item();
     private bool _successMessage = false;
     private string _message;
-    
+    private int _id;
+
     private void ResetForm()
     {
         _item.Type = "";
@@ -60,8 +74,8 @@
 
     private async Task HandleValidSubmit()
     {
-        CreateItemDAO itemDao = new CreateItemDAO(); 
-        
+        CreateItemDAO itemDao = new CreateItemDAO();
+
         itemDao.Type = _item.Type;
         itemDao.Type ??= "";
 
@@ -71,6 +85,7 @@
         _item = await ItemService.CreateItem(itemDao);
 
         _message = "Item created successfully";
+        _id = _item.ItemId;
         _successMessage = true;
         ResetForm();
         StateHasChanged();

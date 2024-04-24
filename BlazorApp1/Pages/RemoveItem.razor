@@ -15,18 +15,37 @@
     </div>
 }
 
-<form class="item-form" @onsubmit="HandleDelite">
-    <label>Item Id:</label>
-    <input type="text" @bind="ItemID" @bind:event="oninput"/>
+<div class="col-md-6">
+    <p>To remove an item, follow these steps:</p>
+    <ol>
+        <li>Locate the item's ID.</li>
+        <li>Enter the item ID in the "Item ID" box below.</li>
+        <li>Click the "Take" button to remove the item.</li>
+    </ol>
 
-    <button type="submit" class="btn btn-primary">Take item</button>
-
-</form>
+    <form class="item-form" @onsubmit="HandleDelite">
+        <div class="form-group">
+            <label for="itemId">Item ID:</label>
+            <input type="text" class="form-control" @bind="ItemID" @bind:event="oninput" placeholder="Enter item ID (for display only)">
+        </div>
+        <div class="button-style">
+            <button type="submit" class="btn btn-primary">Take</button>
+        </div>
+    </form>
+</div>
+@* *@
+@* <form class="item-form" @onsubmit="HandleDelite"> *@
+@*     <label>Item Id:</label> *@
+@*     <input type="text" @bind="ItemID" @bind:event="oninput"/> *@
+@* *@
+@*     <button type="submit" class="btn btn-primary">Take item</button> *@
+@* *@
+@* </form> *@
 
 @code {
     private int ItemID = 0;
     private bool _successMessage = false;
-    
+
     // set itemId back to 0 after sucessfully taken.
     private void ResetItemID()
     {
@@ -38,13 +57,12 @@
         await ItemService.TakeItem(ItemID);
         Console.WriteLine(ItemID.ToString());
         ResetItemID();
-        
+
         _successMessage = true;
         StateHasChanged();
         await Task.Delay(5000);
         _successMessage = false;
         StateHasChanged();
-
     }
 
 }
