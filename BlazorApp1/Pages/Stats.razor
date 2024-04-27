@@ -1,11 +1,9 @@
 ﻿@page "/Stats"
-<script src="drawGraph.js"></script>
 @using BlazorApp1.HttpClient.ItemHttpClient
 @using Data.Entities
 @using Shared.DAO
 @using BlazorApp1.components
 @inject IItemHttpClient ItemService
-@inject IJSRuntime JSRuntime
 
 
 
@@ -35,28 +33,28 @@
 
 @if (PreviousYearCounts.Count > 0)
 {
-    <h4>Previous Year</h4>
+    <h4>Current Year</h4>
     <table class="table">
         <thead>
-            <tr>
-                <th>Month</th>
-                <th>Count</th>
-            </tr>
+        <tr>
+            <th>Month and year</th>
+            <th>Total weight reused</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var monthlyCount in PreviousYearCounts)
-            {
-                <tr>
-                    <td>@GetMonthName(monthlyCount.Month) @previousYear.Year</td>
-                    <td>@monthlyCount.Count</td>
-                </tr>
-            }
+        @foreach (var monthlyCount in PreviousYearCounts)
+        {
+            <tr>
+                <td>@GetMonthName(monthlyCount.Month) @previousYear.Year</td>
+                <td>@monthlyCount.Count</td>
+            </tr>
+        }
         </tbody>
     </table>
 }
 @if (CurrentYearCounts.Count > 0 || PreviousYearCounts.Count > 0)
 {
-    <Graph CurrentData="CurrentYearCounts" PreviousData="PreviousYearCounts"></Graph>
+    <Graph CurrentData="@CurrentYearCounts" PreviousData="@PreviousYearCounts"></Graph>
 }
 
 @code {
@@ -80,7 +78,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetItems();
-        CalculateStats();
+        GenerateDataSets();
         
     }
     
@@ -91,38 +89,35 @@
         _items.IsTaken = true;
         Items = await ItemService.GetItem(_items);
     }
+    
 
-    private void CalculateStats()
+    private void GenerateDataSets()
     {
-        foreach (var item in Items)
-        {
-            var year = item.TakenDate.Year;
-            var month = item.TakenDate.Month;
-            var count = item.Weight;
+        int monthsInYear = 12;
 
-            if (year == currentDate.Year)
-            {
-                UpdateMonthlyCount(CurrentYearCounts, month, count);
-            }
-            else if (year == previousYear.Year)
-            {
-                UpdateMonthlyCount(PreviousYearCounts, month, count);
-            }
+        for (int i = 1; i <= monthsInYear; i++) 
+        {
+            DateTime monthSelector = new DateTime(currentDate.Year, i, 1);
+
+            var orderedDataset = Items.Where(i => i.TakenDate.Year == currentDate.Year || i.TakenDate.Year == previousYear.Year).OrderBy(i => i.TakenDate).ToList();
+
+            var currentYearData = orderedDataset.Where(i => i.TakenDate.Month == monthSelector.Month && i.TakenDate.Year == currentDate.Year).Sum(i => i.Weight);
+
+            MonthlyCount currentMonthCount = new MonthlyCount(); // Create new object for current month
+            currentMonthCount.Count = currentYearData;
+            currentMonthCount.Month = i;
+            CurrentYearCounts.Add(currentMonthCount);
+
+            var previousYearData = orderedDataset.Where(i => i.TakenDate.Month == monthSelector.Month && i.TakenDate.Year == previousYear.Year).Sum(i => i.Weight);
+
+            MonthlyCount previousMonthCount = new MonthlyCount(); // Create new object for previous month
+            previousMonthCount.Count = previousYearData;
+            previousMonthCount.Month = i;
+            PreviousYearCounts.Add(previousMonthCount);
         }
     }
 
-    private void UpdateMonthlyCount(List<MonthlyCount> counts, int month, decimal count)
-    {
-        var existingCount = counts.FirstOrDefault(c => c.Month == month);
-        if (existingCount == null)
-        {
-            counts.Add(new MonthlyCount { Month = month, Count = count });
-        }
-        else
-        {
-            existingCount.Count += count;
-        }
-    }
+   
 
     private string GetMonthName(int month)
     {

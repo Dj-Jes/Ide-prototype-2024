@@ -4,79 +4,102 @@
 <h3>Graph</h3>
 
 <div>
-    <canvas id="myChart" width="400" height="200"></canvas>
+    <canvas id="myChart" width="2000" height="800"></canvas>
 </div>
 
 @code {
-    [Parameter]
-    public List<Stats.MonthlyCount> CurrentData { get; set; }
-    [Parameter]
-    public List<Stats.MonthlyCount> PreviousData { get; set; }
+    [Parameter] public List<Stats.MonthlyCount> CurrentData { get; set; }
+    [Parameter] public List<Stats.MonthlyCount> PreviousData { get; set; }
 
+    private async Task DrawGraph()
+    {
+        // Check if data is received correctly
+        Console.WriteLine("Current Data:");
+        foreach (var data in CurrentData)
+        {
+            Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+        }
+
+        Console.WriteLine("Previous Data:");
+        foreach (var data in PreviousData)
+        {
+            Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+        }
+
+        // Pass the callback function to the JavaScript drawGraph function
+        await JS.InvokeVoidAsync("drawGraph", CurrentData, PreviousData);
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && CurrentData != null && CurrentData.Count > 0 && PreviousData != null)
         {
+            Console.WriteLine("Current Data:");
+            foreach (var data in CurrentData)
+            {
+                Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+            }
+
+            Console.WriteLine("Previous Data:");
+            foreach (var data in PreviousData)
+            {
+                Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+            }
+
             await DrawGraph();
         }
     }
 
-    private async Task DrawGraph()
-    {
-        await JS.InvokeVoidAsync("drawGraph", CurrentData, PreviousData);
-    }
 }
-
 <script>
 function drawGraph(currentData, previousData) {
-  const canvas = document.getElementById('myChart');
-  const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('myChart');
+    const ctx = canvas.getContext('2d');
 
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Handle cases with empty data or single element
-  if (!currentData || !currentData.length) {
-    return; // Handle no data scenario (e.g., display a message)
-  }
+    // Handle cases with empty data or single element
+    if (!currentData || currentData.length === 0) {
+        console.log("No data available.");
+        return;
+    }
 
-  // Define chart dimensions and margins (adjust if needed)
-  const chartWidth = canvas.width - 50;
-  const chartHeight = canvas.height - 50;
-  const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
-  const margin = 20;
+    // Define chart dimensions and margins (adjust if needed)
+    const chartWidth = canvas.width - 50;
+    const chartHeight = canvas.height - 50;
+    const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
+    const margin = 20;
 
-  // Set colors for current and previous year data
-  const currentColor = 'blue';
-  const previousColor = 'gray';
+    // Set colors for current and previous year data
+    const currentColor = 'blue';
+    const previousColor = 'gray';
 
-  // Loop through each month data (considering single element)
-  for (let i = 0; i < currentData.length; i++) {
-    console.log("Current data:", currentData[i]); // Log for debugging
+    // Loop through each month data
+    for (let i = 0; i < currentData.length; i++) {
+        const month = currentData[i].month || 0; // Ensure the property names match
+        const currentCount = currentData[i].count || 0; // Ensure the property names match
 
-    const month = currentData[i].Month || 0; // Set to 0 if undefined (assuming Month is an int)
-    const currentCount = currentData[i].Count || 0; // Set to 0 if undefined (assuming Count is a decimal)
+        // Find previous year data (handle potential absence)
+        const previousItem = previousData.find(d => d.month === month);
+        const previousCount = previousItem ? previousItem.count : 0;
 
-    // Find previous year data (handle potential absence)
-    const previousCount = previousData.find(d => d.Month === month)?.Count || 0;
+        // Calculate bar positions
+        const currentBarX = (barWidth * i) + margin;
+        const previousBarX = currentBarX + barWidth / 2;
 
-    // Calculate bar positions
-    const currentBarX = (barWidth * i) + margin;
-    const previousBarX = currentBarX + barWidth / 2;
+        // Draw bars for current and previous years
+        ctx.fillStyle = currentColor;
+        ctx.fillRect(currentBarX, chartHeight - currentCount, barWidth / 2, currentCount);
+        ctx.fillStyle = previousColor;
+        ctx.fillRect(previousBarX, chartHeight - previousCount, barWidth / 2, previousCount);
 
-    // Draw bars for current and previous years
-    ctx.fillStyle = currentColor;
-    ctx.fillRect(currentBarX, chartHeight - currentCount, barWidth / 2, currentCount);
-    ctx.fillStyle = previousColor;
-    ctx.fillRect(previousBarX, chartHeight - previousCount, barWidth / 2, previousCount);
-
-    // Draw month labels on x-axis
-    ctx.font = '12px Arial';
-    ctx.fillStyle = 'black';
-    ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 15);
-  }
+        // Draw month labels on x-axis
+        ctx.font = '12px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 15);
+    }
 }
-
 
 function GetMonthName(month) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
