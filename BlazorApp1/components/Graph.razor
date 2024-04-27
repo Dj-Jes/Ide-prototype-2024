@@ -4,7 +4,7 @@
 <h3>Graph</h3>
 
 <div>
-    <canvas id="myChart" width="2200" height="900"></canvas>
+    <canvas id="myChart" width="2600" height="900"></canvas>
 </div>
 
 @code {
@@ -123,11 +123,15 @@ function drawGraph(currentData, previousData) {
         ctx.fillStyle = previousColor;
         ctx.fillRect(previousBarX, chartHeight - previousCount * yScale, barWidth / 2, previousCount * yScale);
 
-        // Draw month labels on x-axis
-        ctx.font = '16px Arial'; // Set font size to 16px
-        ctx.fillStyle = 'black';
-        ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 25); // Adjusted y-position for better alignment
-
+       // Draw month labels on x-axis
+       ctx.font = '16px Arial'; // Set font size to 16px
+       ctx.fillStyle = 'black';
+       ctx.textAlign = 'center'; // Center align text
+       ctx.fillText(
+           GetMonthName(month), 
+           currentBarX + (barWidth / 4) + (barWidth / 4), 
+           chartHeight + 25
+       );
         // Add text on top of each bar
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center'; // Center align text
