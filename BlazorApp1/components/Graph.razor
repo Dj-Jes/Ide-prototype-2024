@@ -4,7 +4,7 @@
 <h3>Graph</h3>
 
 <div>
-    <canvas id="myChart" width="2000" height="800"></canvas>
+    <canvas id="myChart" width="2200" height="900"></canvas>
 </div>
 
 @code {
@@ -51,6 +51,8 @@
     }
 
 }
+
+
 <script>
 function drawGraph(currentData, previousData) {
     const canvas = document.getElementById('myChart');
@@ -65,15 +67,42 @@ function drawGraph(currentData, previousData) {
         return;
     }
 
-    // Define chart dimensions and margins (adjust if needed)
+    // Define chart dimensions and margins 
     const chartWidth = canvas.width - 50;
-    const chartHeight = canvas.height - 50;
+    const chartHeight = canvas.height - 220; // Increased padding at the top
     const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
     const margin = 20;
 
     // Set colors for current and previous year data
-    const currentColor = 'blue';
-    const previousColor = 'gray';
+    const currentColor = 'skyblue'; // Changed to a lighter blue shade
+    const previousColor = 'lightgrey'; // Changed to a lighter grey shade
+
+    // Find max count to determine y-axis scale
+    const maxCount = Math.max(
+        ...currentData.map(item => item.count),
+        ...previousData.map(item => item.count)
+    );
+
+    // Calculate y-axis scale
+    const yScale = chartHeight / maxCount;
+
+    // Calculate y-axis segment height and value
+    const segmentHeight = chartHeight / 5;
+    const segmentValue = maxCount / 5;
+
+    // Loop to draw y-axis values
+    ctx.font = '14px Arial'; // Set font size to 16px
+    ctx.fillStyle = 'black'; // Changed y-axis value color to black
+    for (let i = 0; i <= 5; i++) { // Change condition to <= 5 to include the topmost value
+        const yValue = segmentValue * i; // Adjusted to start from 0 instead of 1
+        const yPosition = chartHeight - segmentHeight * i;
+        ctx.fillText(Math.round(yValue), 5, yPosition + 3); // Adjusted x-position for better alignment
+        ctx.beginPath();
+        ctx.moveTo(20, yPosition);
+        ctx.lineTo(25, yPosition);
+        ctx.strokeStyle = 'black'; // Changed y-axis grid color to black
+        ctx.stroke();
+    }
 
     // Loop through each month data
     for (let i = 0; i < currentData.length; i++) {
@@ -90,20 +119,61 @@ function drawGraph(currentData, previousData) {
 
         // Draw bars for current and previous years
         ctx.fillStyle = currentColor;
-        ctx.fillRect(currentBarX, chartHeight - currentCount, barWidth / 2, currentCount);
+        ctx.fillRect(currentBarX, chartHeight - currentCount * yScale, barWidth / 2, currentCount * yScale);
         ctx.fillStyle = previousColor;
-        ctx.fillRect(previousBarX, chartHeight - previousCount, barWidth / 2, previousCount);
+        ctx.fillRect(previousBarX, chartHeight - previousCount * yScale, barWidth / 2, previousCount * yScale);
 
         // Draw month labels on x-axis
-        ctx.font = '12px Arial';
+        ctx.font = '16px Arial'; // Set font size to 16px
         ctx.fillStyle = 'black';
-        ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 15);
-    }
-}
+        ctx.fillText(GetMonthName(month), currentBarX + (barWidth / 4), chartHeight + 25); // Adjusted y-position for better alignment
 
+        // Add text on top of each bar
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center'; // Center align text
+        ctx.fillText(currentCount, currentBarX + (barWidth / 4), Math.max(chartHeight - currentCount * yScale - 5, 30));
+        ctx.fillText(previousCount, previousBarX + (barWidth / 4), Math.max(chartHeight - previousCount * yScale - 5, 30));
+    }
+
+    // Add event listener for click on bars
+    canvas.addEventListener('click', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        for (let i = 0; i < currentData.length; i++) {
+            const currentBarX = (barWidth * i) + margin;
+            const previousBarX = currentBarX + barWidth / 2;
+            const currentCount = currentData[i].count || 0;
+            const previousCount = (previousData.find(d => d.month === currentData[i].month) || {}).count || 0;
+
+            if (
+                mouseX >= currentBarX &&
+                mouseX <= currentBarX + barWidth / 2 &&
+                mouseY >= chartHeight - currentCount * yScale &&
+                mouseY <= chartHeight
+            ) {
+                // Open popup with current and previous counts for the clicked month
+                openPopup(GetMonthName(currentData[i].month), currentCount, previousCount);
+            } else if (
+                mouseX >= previousBarX &&
+                mouseX <= previousBarX + barWidth / 2 &&
+                mouseY >= chartHeight - previousCount * yScale &&
+                mouseY <= chartHeight
+            ) {
+                // Open popup with current and previous counts for the clicked month
+                openPopup(GetMonthName(currentData[i].month), currentCount, previousCount);
+            }
+        }
+    });
+}
 function GetMonthName(month) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
     return monthNames[month - 1];
+}
+
+function openPopup(month, currentCount, previousCount) {
+    alert(`${month}\nCurrent Year: ${currentCount}\nPrevious Year: ${previousCount}`);
 }
 </script>
