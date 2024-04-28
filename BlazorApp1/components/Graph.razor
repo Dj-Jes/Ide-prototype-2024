@@ -1,10 +1,14 @@
 ﻿@using BlazorApp1.Pages
 @inject IJSRuntime JS
-
 <h3>Graph</h3>
-
-<div>
-    <canvas id="myChart" width="2600" height="900"></canvas>
+<div class="chart-container">
+    <div id="chartLegend" class="legend">
+        <p style="color: skyblue;">Current Year</p>
+        <p style="color: lightgrey;">Previous Year</p>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="myChart" width="1600" height="800"></canvas>
+    </div>
 </div>
 
 @code {
@@ -29,7 +33,7 @@
         // Pass the callback function to the JavaScript drawGraph function
         await JS.InvokeVoidAsync("drawGraph", CurrentData, PreviousData);
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && CurrentData != null && CurrentData.Count > 0 && PreviousData != null)
@@ -68,8 +72,8 @@ function drawGraph(currentData, previousData) {
     }
 
     // Define chart dimensions and margins 
-    const chartWidth = canvas.width - 50;
-    const chartHeight = canvas.height - 220; // Increased padding at the top
+    const chartWidth = canvas.width*2;
+    const chartHeight = canvas.height - 60; // Increased padding at the top
     const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
     const margin = 20;
 
@@ -91,8 +95,8 @@ function drawGraph(currentData, previousData) {
     const segmentValue = maxCount / 5;
 
     // Loop to draw y-axis values
-    ctx.font = '14px Arial'; // Set font size to 16px
-    ctx.fillStyle = 'black'; // Changed y-axis value color to black
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'black';
     for (let i = 0; i <= 5; i++) { // Change condition to <= 5 to include the topmost value
         const yValue = segmentValue * i; // Adjusted to start from 0 instead of 1
         const yPosition = chartHeight - segmentHeight * i;

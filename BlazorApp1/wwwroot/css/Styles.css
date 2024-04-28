@@ -13,3 +13,28 @@
     padding-top: 20px;
     float: right;
 }
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the chart and legend horizontally */
+    margin: 20px auto; /* Add some margin for better spacing */
+    width: 80%; /* Set a maximum width for responsiveness */
+}
+
+.legend {
+    display: flex;
+    justify-content: space-between; /* Distribute legend items evenly */
+    margin-bottom: 10px; /* Add some space between legend and chart */
+    font-weight: bold;
+}
+
+.legend p {
+    margin: 0 5px; /* Add some spacing between legend text and color box */
+}
+
+.chart-wrapper {
+    border: 1px solid #ddd; /* Add a thin border to the chart */
+    border-radius: 5px; /* Add rounded corners for a nicer look */
+    overflow: hidden; /* Prevent chart overflow outside the container */
+}
