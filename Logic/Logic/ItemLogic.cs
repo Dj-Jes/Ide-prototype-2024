@@ -19,6 +19,7 @@ public class ItemLogic :IItemLogic
         Item item = new Item();
         item.Type = createItemDao.Type;
         item.Weight = createItemDao.Weight;
+        item.Unit = createItemDao.Unit;
         item.CreatedDate = DateTime.Today;
         item.SoteringCategory = createItemDao.SoteringCategory;
         item.IsTaken = false;

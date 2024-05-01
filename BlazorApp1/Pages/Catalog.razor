@@ -24,7 +24,7 @@
 }
 else if (!Items.Any())
 {
-    <span>No users to be found</span>
+    <span>It's already taken ! oh no you can try again later!</span>
 }
 else
 {
@@ -42,7 +42,7 @@ else
                     <label>Category: @item.SoteringCategory</label>
                 </div>
                 <div>
-                    <label>Weight: @item.Weight kg</label>
+                    <label>Amount: @item.Weight @ReadableUnits.GetReadableUnit(item.Unit)</label>
                 </div>
                 <div>
                     <label>Received: @item.CreatedDate.Day/@item.CreatedDate.Month/@item.CreatedDate.Year</label>
@@ -56,7 +56,7 @@ else
 
     public List<Item> Items { get; set; } = new List<Item>();
 
-
+    public GetReadableUnits ReadableUnits = new GetReadableUnits();
     protected override async Task OnInitializedAsync()
     {
         await GetItems();

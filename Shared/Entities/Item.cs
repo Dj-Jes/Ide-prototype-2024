@@ -16,6 +16,10 @@ public class Item
     public DateTime CreatedDate { get; set; }
     [Required]
     public decimal Weight { get; set; }
+    
+    [Required]
+    public Units Unit { get; set; }
+    
     [Required]
     public SorteringCategory SoteringCategory { get; set; }
     [Required, Length(0,25)]

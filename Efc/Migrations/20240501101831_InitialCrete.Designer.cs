@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Efc.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240417110952_InitialCreate1")]
-    partial class InitialCreate1
+    [Migration("20240501101831_InitialCrete")]
+    partial class InitialCrete
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,9 @@ namespace Efc.Migrations
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Weight")
                         .HasColumnType("TEXT");

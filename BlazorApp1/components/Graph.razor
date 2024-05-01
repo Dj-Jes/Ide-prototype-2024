@@ -1,0 +1,186 @@
+﻿@using BlazorApp1.Pages
+@inject IJSRuntime JS
+
+<div class="chart-container">
+    <div id="chartLegend" class="legend">
+        <p style="color: skyblue;">Current Year</p>
+        <p style="color: lightgrey;">Previous Year</p>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="myChart" width="1200" height="800"></canvas>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<Stats.MonthlyCount> CurrentData { get; set; }
+    [Parameter] public List<Stats.MonthlyCount> PreviousData { get; set; }
+
+    private async Task DrawGraph()
+    {
+        // Check if data is received correctly
+        Console.WriteLine("Current Data:");
+        foreach (var data in CurrentData)
+        {
+            Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+        }
+
+        Console.WriteLine("Previous Data:");
+        foreach (var data in PreviousData)
+        {
+            Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+        }
+
+        // Pass the callback function to the JavaScript drawGraph function
+        await JS.InvokeVoidAsync("drawGraph", CurrentData, PreviousData);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && CurrentData != null && CurrentData.Count > 0 && PreviousData != null)
+        {
+            Console.WriteLine("Current Data:");
+            foreach (var data in CurrentData)
+            {
+                Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+            }
+
+            Console.WriteLine("Previous Data:");
+            foreach (var data in PreviousData)
+            {
+                Console.WriteLine($"Month: {data.Month}, Count: {data.Count}");
+            }
+
+            await DrawGraph();
+        }
+    }
+
+}
+
+
+<script>
+function drawGraph(currentData, previousData) {
+    const canvas = document.getElementById('myChart');
+    const ctx = canvas.getContext('2d');
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Handle cases with empty data or single element
+    if (!currentData || currentData.length === 0) {
+        console.log("No data available.");
+        return;
+    }
+
+    // Define chart dimensions and margins 
+    const chartWidth = canvas.width*2 - 60;
+    const chartHeight = canvas.height - 60; // Increased padding at the top
+    const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
+    const margin = 20;
+
+    // Set colors for current and previous year data
+    const currentColor = 'skyblue'; // Changed to a lighter blue shade
+    const previousColor = 'lightgrey'; // Changed to a lighter grey shade
+
+    // Find max count to determine y-axis scale
+    const maxCount = Math.max(
+        ...currentData.map(item => item.count),
+        ...previousData.map(item => item.count)
+    );
+
+    // Calculate y-axis scale
+    const yScale = chartHeight / maxCount;
+
+    // Calculate y-axis segment height and value
+    const segmentHeight = chartHeight / 10;
+    const segmentValue = maxCount / 10;
+
+    // Loop to draw y-axis values
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'black';
+    for (let i = 0; i <= 11; i++) { // Change condition to <= 5 to include the topmost value
+        const yValue = Math.floor(segmentValue) * i; // Adjusted to start from 0 instead of 1
+        const yPosition = chartHeight - segmentHeight * i;
+        ctx.fillText(Math.round(yValue), 5, yPosition + 3); // Adjusted x-position for better alignment
+        ctx.beginPath();
+        ctx.moveTo(20, yPosition);
+        ctx.strokeStyle = 'black'; // Changed y-axis grid color to black
+        ctx.stroke();
+    }
+
+    // Loop through each month data
+    for (let i = 0; i < currentData.length; i++) {
+        const month = currentData[i].month || 0; // Ensure the property names match
+        const currentCount = currentData[i].count || 0; // Ensure the property names match
+
+        // Find previous year data (handle potential absence)
+        const previousItem = previousData.find(d => d.month === month);
+        const previousCount = previousItem ? previousItem.count : 0;
+
+        // Calculate bar positions
+        const currentBarX = (barWidth * i) + margin;
+        const previousBarX = currentBarX + barWidth / 2;
+
+        // Draw bars for current and previous years
+        ctx.fillStyle = currentColor;
+        ctx.fillRect(currentBarX, chartHeight - currentCount * yScale, barWidth / 2, currentCount * yScale);
+        ctx.fillStyle = previousColor;
+        ctx.fillRect(previousBarX, chartHeight - previousCount * yScale, barWidth / 2, previousCount * yScale);
+
+       // Draw month labels on x-axis
+       ctx.font = '16px Arial'; // Set font size to 16px
+       ctx.fillStyle = 'black';
+       ctx.textAlign = 'center'; // Center align text
+       ctx.fillText(
+           GetMonthName(month), 
+           currentBarX + (barWidth / 4) + (barWidth / 4), 
+           chartHeight + 25
+       );
+        // Add text on top of each bar
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center'; // Center align text
+        ctx.fillText(currentCount, currentBarX + (barWidth / 4), Math.max(chartHeight - currentCount * yScale - 5, 30));
+        ctx.fillText(previousCount, previousBarX + (barWidth / 4), Math.max(chartHeight - previousCount * yScale - 5, 30));
+    }
+
+    // Add event listener for click on bars
+    canvas.addEventListener('click', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        for (let i = 0; i < currentData.length; i++) {
+            const currentBarX = (barWidth * i) + margin;
+            const previousBarX = currentBarX + barWidth / 2;
+            const currentCount = currentData[i].count || 0;
+            const previousCount = (previousData.find(d => d.month === currentData[i].month) || {}).count || 0;
+
+            if (
+                mouseX >= currentBarX &&
+                mouseX <= currentBarX + barWidth / 2 &&
+                mouseY >= chartHeight - currentCount * yScale &&
+                mouseY <= chartHeight
+            ) {
+                // Open popup with current and previous counts for the clicked month
+                openPopup(GetMonthName(currentData[i].month), currentCount, previousCount);
+            } else if (
+                mouseX >= previousBarX &&
+                mouseX <= previousBarX + barWidth / 2 &&
+                mouseY >= chartHeight - previousCount * yScale &&
+                mouseY <= chartHeight
+            ) {
+                // Open popup with current and previous counts for the clicked month
+                openPopup(GetMonthName(currentData[i].month), currentCount, previousCount);
+            }
+        }
+    });
+}
+function GetMonthName(month) {
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+    return monthNames[month - 1];
+}
+
+function openPopup(month, currentCount, previousCount) {
+    alert(`${month}\nCurrent Year: ${currentCount}\nPrevious Year: ${previousCount}`);
+}
+</script>

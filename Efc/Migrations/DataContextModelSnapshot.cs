@@ -39,6 +39,9 @@ namespace Efc.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Unit")
+                        .HasColumnType("INTEGER");
+
                     b.Property<decimal>("Weight")
                         .HasColumnType("TEXT");
 
