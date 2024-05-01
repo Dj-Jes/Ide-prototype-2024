@@ -1,13 +1,13 @@
 ﻿@using BlazorApp1.Pages
 @inject IJSRuntime JS
-<h3>Graph</h3>
+
 <div class="chart-container">
     <div id="chartLegend" class="legend">
         <p style="color: skyblue;">Current Year</p>
         <p style="color: lightgrey;">Previous Year</p>
     </div>
     <div class="chart-wrapper">
-        <canvas id="myChart" width="1600" height="800"></canvas>
+        <canvas id="myChart" width="1200" height="800"></canvas>
     </div>
 </div>
 
@@ -72,7 +72,7 @@ function drawGraph(currentData, previousData) {
     }
 
     // Define chart dimensions and margins 
-    const chartWidth = canvas.width*2;
+    const chartWidth = canvas.width*2 - 60;
     const chartHeight = canvas.height - 60; // Increased padding at the top
     const barWidth = chartWidth / (currentData.length + previousData.length || 1); // Avoid division by zero
     const margin = 20;
@@ -91,19 +91,18 @@ function drawGraph(currentData, previousData) {
     const yScale = chartHeight / maxCount;
 
     // Calculate y-axis segment height and value
-    const segmentHeight = chartHeight / 5;
-    const segmentValue = maxCount / 5;
+    const segmentHeight = chartHeight / 10;
+    const segmentValue = maxCount / 10;
 
     // Loop to draw y-axis values
     ctx.font = '16px Arial';
     ctx.fillStyle = 'black';
-    for (let i = 0; i <= 5; i++) { // Change condition to <= 5 to include the topmost value
-        const yValue = segmentValue * i; // Adjusted to start from 0 instead of 1
+    for (let i = 0; i <= 11; i++) { // Change condition to <= 5 to include the topmost value
+        const yValue = Math.floor(segmentValue) * i; // Adjusted to start from 0 instead of 1
         const yPosition = chartHeight - segmentHeight * i;
         ctx.fillText(Math.round(yValue), 5, yPosition + 3); // Adjusted x-position for better alignment
         ctx.beginPath();
         ctx.moveTo(20, yPosition);
-        ctx.lineTo(25, yPosition);
         ctx.strokeStyle = 'black'; // Changed y-axis grid color to black
         ctx.stroke();
     }
