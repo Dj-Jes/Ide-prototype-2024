@@ -1,0 +1,160 @@
+﻿@page "/Ai"
+<h3>Create Item</h3>
+
+
+@using Data.Entities
+@using Shared.DAO
+@using BlazorApp1.HttpClient.ItemHttpClient
+@inject IItemHttpClient ItemService
+@using BlazorApp1.components
+
+<style>
+    .file-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px;
+
+        
+    }
+
+    .uploaded-image {
+        max-width: 50%;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+    }
+</style>
+
+
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        @_message
+        <p>Your item have number : @_id</p>
+    </div>
+}
+
+
+<div class="col-md-6">
+    <p>To create a new item, follow these steps:</p>
+    <ol>
+        <li>Enter the item name in the "Product" box.</li>
+        <li>Specify the item's weight in kilograms (kg) in the "Weight" box.</li>
+        <li>Select the appropriate sorting type from the "Sorting Type" dropdown menu.</li>
+        <li>Click the "Create Item" button to create the item.</li>
+    </ol>
+    
+  <div class="image-to-display">
+        <h3>File Uploader</h3>
+        <InputFile OnChange="HandleSelectedFiles" />
+        @foreach (var file in uploadedFiles)
+        {
+            <div class="file-preview">
+                <img src="@file.Preview" alt="@file.Name" class="uploaded-image" />
+            </div>
+        }
+    </div>
+
+
+
+
+    <form class="item-form" @onsubmit="HandleValidSubmit">
+        <div class="form-group">
+            <label for="type">Product:</label>
+            <input type="text" class="form-control" id="type" @bind-value="@_item.Type">
+        </div>
+        <div class="form-group">
+            <labe for="sortingCategory">Unit type:</labe>
+        </div>
+        <div class="form-group">
+            <InputSelect @bind-Value="_item.Unit">
+                    @foreach (Units _unit in Enum.GetValues(typeof(Units)))
+                    {
+                        <option value="@_unit">@(ReadableUnits.GetReadableUnit(_unit))</option>
+                    }
+                </InputSelect>
+        </div>
+        <div class="form-group">
+            <label for="weight">Amount:</label>
+            <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" step="0.001" required min="0.001">
+            <div class="invalid-feedback">Weight must be a positive number greater than or equal to 0.001.</div>
+        </div>
+        <div class="form-group">
+            <labe for="sortingCategory">Sorting Category:</labe>
+        </div>
+        <div class="form-group">
+            <InputSelect @bind-Value="_item.SoteringCategory">
+                @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
+                {
+                    <option value="@category">@category.ToString()</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="button-style">
+            <button type="submit" class="btn btn-primary">Create Item</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    private Item _item = new Item();
+    private bool _successMessage = false;
+    private string _message;
+    private int _id;
+    
+    private List<UploadedFile> uploadedFiles = new();
+
+    public GetReadableUnits ReadableUnits = new GetReadableUnits();
+
+    private void ResetForm()
+    {
+        _item.Type = "";
+        _item.Weight = 0;
+        _item.SoteringCategory = SorteringCategory.HardPlast;
+        _item.Unit = Units.Weight;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        CreateItemDAO itemDao = new CreateItemDAO();
+
+        itemDao.Type = _item.Type;
+        itemDao.Type ??= "";
+        itemDao.Weight = _item.Weight;
+        itemDao.SoteringCategory = _item.SoteringCategory;
+        itemDao.Unit = _item.Unit;
+
+        _item = await ItemService.CreateItem(itemDao);
+
+        _message = "Item created successfully";
+        _id = _item.ItemId;
+        _successMessage = true;
+        ResetForm();
+        StateHasChanged();
+        await Task.Delay(5000);
+        _successMessage = false;
+        StateHasChanged();
+    }
+    
+    private async Task HandleSelectedFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+
+            var uploadedFile = new UploadedFile
+            {
+                Name = file.Name,
+                Content = buffer,
+                Preview = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}"
+            };
+
+            uploadedFiles.Add(uploadedFile);
+        }
+    }
+
+   
+}
