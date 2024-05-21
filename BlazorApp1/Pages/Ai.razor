@@ -63,7 +63,7 @@
     <form class="item-form" @onsubmit="HandleValidSubmit">
         <div class="form-group">
             <label for="type">Product:</label>
-            <input type="text" class="form-control" id="type" @bind-value="@_item.Type">
+            <input type="text" class="form-control" id="type" @bind-value="@_item.Type" placeholder="@(_nameWithExtension ?? "No file selected")">
         </div>
         <div class="form-group">
             <labe for="sortingCategory">Unit type:</labe>
@@ -103,6 +103,7 @@
     private bool _successMessage = false;
     private string _message;
     private int _id;
+    private string _nameWithExtension;
     
     private List<UploadedFile> uploadedFiles = new();
 
@@ -149,8 +150,12 @@
             {
                 Name = file.Name,
                 Content = buffer,
-                Preview = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}"
+                Preview = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}",
+                PredictedClass = Path.GetFileNameWithoutExtension(file.Name)
+                    
             };
+
+            _nameWithExtension = uploadedFile.PredictedClass; 
 
             uploadedFiles.Add(uploadedFile);
         }
