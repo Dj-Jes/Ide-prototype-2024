@@ -1,7 +1,6 @@
 ﻿@page "/Ai"
 <h3>Create Item</h3>
 
-
 @using Data.Entities
 @using Shared.DAO
 @using BlazorApp1.HttpClient.ItemHttpClient
@@ -14,8 +13,6 @@
         flex-direction: column;
         align-items: center;
         margin: 10px;
-
-        
     }
 
     .uploaded-image {
@@ -27,15 +24,13 @@
     }
 </style>
 
-
 @if (_successMessage)
 {
     <div class="alert alert-success" role="alert">
         @_message
-        <p>Your item have number : @_id</p>
+        <p>Your item has number: @_id</p>
     </div>
 }
-
 
 <div class="col-md-6">
     <p>To create a new item, follow these steps:</p>
@@ -45,8 +40,8 @@
         <li>Select the appropriate sorting type from the "Sorting Type" dropdown menu.</li>
         <li>Click the "Create Item" button to create the item.</li>
     </ol>
-    
-  <div class="image-to-display">
+
+    <div class="image-to-display">
         <h3>File Uploader</h3>
         <InputFile OnChange="HandleSelectedFiles" />
         @foreach (var file in uploadedFiles)
@@ -57,34 +52,27 @@
         }
     </div>
 
-
-
-
     <form class="item-form" @onsubmit="HandleValidSubmit">
         <div class="form-group">
             <label for="type">Product:</label>
-            <input type="text" class="form-control" id="type" @bind-value="@_item.Type" placeholder="@(_nameWithExtension ?? "No file selected")">
+            <input type="text" class="form-control" id="type" @bind-value="_item.Type" placeholder="@(_nameWithOutExtension ?? "No file selected")">
         </div>
         <div class="form-group">
-            <labe for="sortingCategory">Unit type:</labe>
-        </div>
-        <div class="form-group">
+            <label for="unit">Unit type:</label>
             <InputSelect @bind-Value="_item.Unit">
-                    @foreach (Units _unit in Enum.GetValues(typeof(Units)))
-                    {
-                        <option value="@_unit">@(ReadableUnits.GetReadableUnit(_unit))</option>
-                    }
-                </InputSelect>
+                @foreach (Units _unit in Enum.GetValues(typeof(Units)))
+                {
+                    <option value="@_unit">@ReadableUnits.GetReadableUnit(_unit)</option>
+                }
+            </InputSelect>
         </div>
         <div class="form-group">
             <label for="weight">Amount:</label>
-            <input type="number" class="form-control" id="weight" @bind-value="@_item.Weight" step="0.001" required min="0.001">
+            <input type="number" class="form-control" id="weight" @bind-value="_item.Weight" step="0.001" required min="0.001">
             <div class="invalid-feedback">Weight must be a positive number greater than or equal to 0.001.</div>
         </div>
         <div class="form-group">
-            <labe for="sortingCategory">Sorting Category:</labe>
-        </div>
-        <div class="form-group">
+            <label for="sortingCategory">Sorting Category:</label>
             <InputSelect @bind-Value="_item.SoteringCategory">
                 @foreach (var category in Enum.GetValues(typeof(SorteringCategory)))
                 {
@@ -103,8 +91,8 @@
     private bool _successMessage = false;
     private string _message;
     private int _id;
-    private string _nameWithExtension;
-    
+    private string _nameWithOutExtension;
+
     private List<UploadedFile> uploadedFiles = new();
 
     public GetReadableUnits ReadableUnits = new GetReadableUnits();
@@ -119,13 +107,18 @@
 
     private async Task HandleValidSubmit()
     {
-        CreateItemDAO itemDao = new CreateItemDAO();
+        if (string.IsNullOrEmpty(_item.Type) && uploadedFiles.Count > 0)
+        {
+            _item.Type = uploadedFiles[0].PredictedClass;
+        }
 
-        itemDao.Type = _item.Type;
-        itemDao.Type ??= "";
-        itemDao.Weight = _item.Weight;
-        itemDao.SoteringCategory = _item.SoteringCategory;
-        itemDao.Unit = _item.Unit;
+        CreateItemDAO itemDao = new CreateItemDAO
+        {
+            Type = _item.Type ?? "",
+            Weight = _item.Weight,
+            SoteringCategory = _item.SoteringCategory,
+            Unit = _item.Unit
+        };
 
         _item = await ItemService.CreateItem(itemDao);
 
@@ -138,7 +131,7 @@
         _successMessage = false;
         StateHasChanged();
     }
-    
+
     private async Task HandleSelectedFiles(InputFileChangeEventArgs e)
     {
         foreach (var file in e.GetMultipleFiles())
@@ -152,14 +145,11 @@
                 Content = buffer,
                 Preview = $"data:image/jpeg;base64,{Convert.ToBase64String(buffer)}",
                 PredictedClass = Path.GetFileNameWithoutExtension(file.Name)
-                    
             };
 
-            _nameWithExtension = uploadedFile.PredictedClass; 
-
+            _nameWithOutExtension = uploadedFile.PredictedClass;
+            _item.Type = _nameWithOutExtension;
             uploadedFiles.Add(uploadedFile);
         }
     }
-
-   
 }
