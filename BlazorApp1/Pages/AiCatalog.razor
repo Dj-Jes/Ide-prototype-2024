@@ -1,0 +1,123 @@
+﻿@page "/AiCatalog"
+<h3>AiCatalog</h3>
+@using Shared.DAO
+@using BlazorApp1.HttpClient.ItemHttpClient
+@using Data.Entities
+@using BlazorApp1.components
+@inject IItemHttpClient ItemService
+@inject IFileService FileService
+
+<h3 style="text-align: center">Overview of all Items</h3>
+
+<style>
+    .user-card {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        display: inline-block;
+        margin: 25px;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        background-color: #f8f9fa;
+    }
+
+    .uploaded-image {
+        max-width: 15%;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 4px;
+    }
+
+    .button-style {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .users-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+</style>
+
+@if (Items == null)
+{
+    <span>Loading..</span>
+}
+else if (!Items.Any())
+{
+    <span>It's already taken! Oh no, you can try again later!</span>
+}
+else
+{
+    <div class="button-style">
+        <a href="/Ai" class="btn btn-primary">Go to Ai Create</a>
+    </div>
+    
+    <div class="users-container">
+        @foreach (Item item in Items)
+        {
+            <div class="user-card">
+                <div>
+                    @if (Files.Any(f => f.ItemId == item.ItemId))
+                    {
+                        @foreach (UploadedFile file in Files.Where(f => f.ItemId == item.ItemId))
+                        {
+                            <img src="@file.Preview" alt="@file.Name" class="uploaded-image"/>
+                        }
+                    }
+                    else
+                    {
+                        <span>No image available</span>
+                    }
+                </div>
+
+                <div>
+                    <label>ID: @item.ItemId</label>
+                </div>
+                <div>
+                    <label>Product: @item.Type</label>
+                </div>
+                <div>
+                    <label>Category: @item.SoteringCategory</label>
+                </div>
+                <div>
+                    <label>Amount: @item.Weight @ReadableUnits.GetReadableUnit(item.Unit)</label>
+                </div>
+                <div>
+                    <label>Received: @item.CreatedDate.Day/@item.CreatedDate.Month/@item.CreatedDate.Year</label>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    public List<Item> Items { get; set; } = new List<Item>();
+
+    public GetReadableUnits ReadableUnits = new GetReadableUnits();
+
+    public List<UploadedFile> Files { get; set; } = new List<UploadedFile>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("Initializing AiCatalog page...");
+        await GetItems();
+        GetFiles();
+        Console.WriteLine($"Number of items: {Items.Count}");
+        Console.WriteLine($"Number of files: {Files.Count}");
+    }
+
+    private async Task GetItems()
+    {
+        GetItemsDAO _items = new GetItemsDAO();
+        _items.IsTaken = false;
+        Items = await ItemService.GetItem(_items);
+        Console.WriteLine($"Items retrieved: {Items.Count}");
+    }
+
+    private void GetFiles()
+    {
+        Files = FileService.GetFiles();
+        Console.WriteLine($"Files retrieved: {Files.Count}");
+    }
+}

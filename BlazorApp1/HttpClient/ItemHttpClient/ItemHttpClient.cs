@@ -86,4 +86,11 @@ public class ItemHttpClient : IItemHttpClient
 
         return query;
     }
+    
+    public async Task GetExcelData()
+    {
+        //HttpResponseMessage response = await client.GetAsync($"/");
+        HttpResponseMessage response = await client.GetAsync("api/data/getExcelData");
+        string result = await response.Content.ReadAsStringAsync();
+    }
 }
