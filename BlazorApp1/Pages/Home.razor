@@ -1,7 +1,70 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<div class="container">
+    <div class="row align-items-center hero-section">
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h1 class="display-4 mb-4">Horsens Recycling Center: Your Partner in Green Transition</h1>
+            <p class="lead">Make a difference and embrace sustainability by bringing recyclable materials to us! We offer a convenient way to dispose of items responsibly while promoting a greener future.</p>
+            <a href="what-to-recycle" class="btn btn-lg btn-primary">Learn More About What We Recycle</a>
+            @* Todo add a alink to the recycling plant itself (Dont know how relevant this will be.)*@
+        </div>
+        <div class="col-md-6 d-none d-md-block">
+            <img src="https://horsens.dk/media/gblfqd4l/dronefoto_horsens_med_tal-sep-2018_800x450.jpg?rmode=max&width=750" alt="Image of recycling items" class="img-fluid">
+        </div>
+    </div>
 
-<h1>Hello, world!</h1>
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Get a overview made easy!</h5>
+                    <p class="card-text">Did you know you can take certain items home from our center? We offer a variety of materials perfect for upcycling projects or everyday use. Visit our "Catalog" section below to explore!</p>
+                    <br/>
+                    <a href="Catalog" class="btn btn-primary">See What's Available</a>
+                </div>
+            </div>
+        </div>
 
-Welcome to your new app.
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Registering Items Made Easy</h5>
+                    <p class="card-text">
+                        We'll stop you here! Before you put your items in the containers, do you bring something other could use?
+                        register the items you would reuse. Visit our "Registering Items" section below to kickstart the recycling adventure!
+                    </p>
+                    <a href="CreateItem" class="btn btn-primary">Registering Items</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Take items Home Made Easy</h5>
+                    <p class="card-text">
+                        You found something amazing? lovely Take it home! this is made easy by our "Take Home" Section Just input the item ID and click take home!.
+                        <br/>
+                        <br/>
+                        <br/>
+                        
+                    </p>
+                    <a href="RemoveItem" class="btn btn-primary">Take It Home!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col text-center">
+            <h2>Get Involved!</h2>
+            <p>Together, we can make a significant impact on the environment. Here are some ways you can get involved:</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Reduce your waste consumption</li>
+                <li class="list-group-item">Recycle diligently</li>
+                <li class="list-group-item">Spread awareness about sustainability</li>
+                <li class="list-group-item">Volunteer at the recycling center</li>
+            </ul>
+        </div>
+    </div>
+</div>

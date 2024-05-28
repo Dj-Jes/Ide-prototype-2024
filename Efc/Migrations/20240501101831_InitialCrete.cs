@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Efc.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCrete : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,9 +17,12 @@ namespace Efc.Migrations
                 {
                     ItemId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Weight = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Unit = table.Column<int>(type: "INTEGER", nullable: false),
                     SoteringCategory = table.Column<int>(type: "INTEGER", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
+                    TakenDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsTaken = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

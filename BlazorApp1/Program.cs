@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorApp1;
+using BlazorApp1.components;
 using BlazorApp1.HttpClient.ItemHttpClient;
 using MudBlazor.Services;
 
@@ -16,9 +17,9 @@ builder.Services.AddScoped(
         }
 );
 
-builder.Services.AddMudServices();
 
 // adding the HttpClients
 builder.Services.AddScoped<IItemHttpClient, ItemHttpClient>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 await builder.Build().RunAsync();

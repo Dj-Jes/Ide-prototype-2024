@@ -1,0 +1,53 @@
+﻿.item-form {
+    font-size: 18px;
+    color: black;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+.form-group {
+    width: 30%;
+    padding-bottom: 10px;
+
+}
+.button-style {
+    padding-top: 20px;
+    float: right;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the chart and legend horizontally */
+    margin: 20px auto; /* Add some margin for better spacing */
+    width: 80%; /* Set a maximum width for responsiveness */
+}
+
+.legend {
+    display: flex;
+    justify-content: space-between; /* Distribute legend items evenly */
+    margin-bottom: 10px; /* Add some space between legend and chart */
+    font-weight: bold;
+}
+
+.legend p {
+    margin: 0 5px; /* Add some spacing between legend text and color box */
+}
+
+.chart-wrapper {
+    border: 1px solid #ddd; /* Add a thin border to the chart */
+    border-radius: 5px; /* Add rounded corners for a nicer look */
+    overflow: hidden; /* Prevent chart overflow outside the container */
+}
+
+.file-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+}
+
+.file-preview img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+}

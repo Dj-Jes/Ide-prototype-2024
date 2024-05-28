@@ -1,0 +1,2 @@
+set the vscode path to the path to ../Data
+enter uvicorn main:app into the terminal

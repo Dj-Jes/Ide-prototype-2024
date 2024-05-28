@@ -1,0 +1,157 @@
+﻿@page "/Stats"
+@using BlazorApp1.HttpClient.ItemHttpClient
+@using Data.Entities
+@using Shared.DAO
+@using BlazorApp1.components
+@inject IItemHttpClient ItemService
+@inject IJSRuntime JSRuntime
+
+<style>
+    .button{
+            display: flex;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+</style>
+
+<h3>Item Statistics</h3>
+
+
+@if (CurrentYearCounts.Count > 0 || PreviousYearCounts.Count > 0)
+{
+    <Graph CurrentData="@CurrentYearCounts" PreviousData="@PreviousYearCounts"></Graph>
+}
+
+@if (CurrentYearCounts.Count > 0)
+{
+    <h4>Current Year</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Month and year</th>
+            <th>Total weight reused</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var monthlyCount in CurrentYearCounts)
+        {
+            <tr>
+                <td>@GetMonthName(monthlyCount.Month) @currentDate.Year</td>
+                <td>@monthlyCount.Count</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (PreviousYearCounts.Count > 0)
+{
+    <h4>Last Year</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Month and year</th>
+            <th>Total weight reused</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var monthlyCount in PreviousYearCounts)
+        {
+            <tr>
+                <td>@GetMonthName(monthlyCount.Month) @previousYear.Year</td>
+                <td>@monthlyCount.Count</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<div class="button">
+    <div class="button-style">
+        <button @onclick="OpenNewWindow" type="submit" class="btn btn-primary">Generate Xl file</button>
+    </div>
+    <a href="http://127.0.0.1:8000/" hidden id="newWindowLink"></a>
+
+</div>
+
+
+<script>
+    function openNewWindow(url) {
+        window.open(url, '_blank');
+    }
+</script>
+
+@code {
+
+    public class MonthlyCount
+    {
+        public int Month { get; set; }
+        public decimal Count { get; set; }
+    }
+
+    [Parameter] public List<MonthlyCount> CurrentYearCounts { get; set; } = new List<MonthlyCount>();
+    [Parameter] public List<MonthlyCount> PreviousYearCounts { get; set; } = new List<MonthlyCount>();
+
+    public List<Item> Items { get; set; } = new List<Item>();
+
+    public DateTime currentDate = DateTime.Now;
+    public DateTime previousYear = DateTime.Now.AddYears(-1);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetItems();
+        GenerateDataSets();
+    }
+
+
+    private async Task GetItems()
+    {
+        GetItemsDAO _items = new GetItemsDAO();
+        _items.IsTaken = true;
+        Items = await ItemService.GetItem(_items);
+    }
+
+
+    private void GenerateDataSets()
+    {
+        int monthsInYear = 12;
+
+        for (int i = 1; i <= monthsInYear; i++)
+        {
+            DateTime monthSelector = new DateTime(currentDate.Year, i, 1);
+
+            var orderedDataset = Items.Where(i => i.TakenDate.Year == currentDate.Year || i.TakenDate.Year == previousYear.Year).OrderBy(i => i.TakenDate).ToList();
+
+            var currentYearData = orderedDataset.Where(i => i.TakenDate.Month == monthSelector.Month && i.TakenDate.Year == currentDate.Year).Sum(i => i.Weight);
+
+            MonthlyCount currentMonthCount = new MonthlyCount(); // Create new object for current month
+            currentMonthCount.Count = currentYearData;
+            currentMonthCount.Month = i;
+            CurrentYearCounts.Add(currentMonthCount);
+
+            var previousYearData = orderedDataset.Where(i => i.TakenDate.Month == monthSelector.Month && i.TakenDate.Year == previousYear.Year).Sum(i => i.Weight);
+
+            MonthlyCount previousMonthCount = new MonthlyCount(); // Create new object for previous month
+            previousMonthCount.Count = previousYearData;
+            previousMonthCount.Month = i;
+            PreviousYearCounts.Add(previousMonthCount);
+        }
+    }
+
+
+    private string GetMonthName(int month)
+    {
+        return new DateTime(2024, month, 1).ToString("MMMM");
+    }
+
+    private async Task HandleGenerateXlFile()
+    {
+        await ItemService.GetExcelData();
+    }
+
+    private async Task OpenNewWindow()
+    {
+        await JSRuntime.InvokeVoidAsync("openNewWindow", "http://127.0.0.1:8000/");
+    }
+
+}

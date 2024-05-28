@@ -1,0 +1,63 @@
+﻿@page "/RemoveItem"
+<h3>Remove Item</h3>
+
+@using BlazorApp1.HttpClient.ItemHttpClient
+@inject IItemHttpClient ItemService
+
+<head>
+    <link rel="stylesheet" href="css/Styles.css">
+</head>
+
+@if (_successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        Item has been Taken!
+        <br/>
+        You have now helped to recycle @_goodWillPoints kg.
+    </div>
+}
+
+<div class="col-md-6">
+    <p>To remove an item, follow these steps:</p>
+    <ol>
+        <li>Locate the item's ID.</li>
+        <li>Enter the item ID in the "Item ID" box below.</li>
+        <li>Click the "Take" button to remove the item.</li>
+    </ol>
+
+    <form class="item-form" @onsubmit="HandleDelite">
+        <div class="form-group">
+            <label for="itemId">Item ID:</label>
+            <input type="text" class="form-control" @bind="ItemID" @bind:event="oninput" placeholder="Enter item ID">
+        </div>
+        <div class="button-style">
+            <button type="submit" class="btn btn-primary">Take</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    private int ItemID = 0;
+    private bool _successMessage = false;
+    private decimal _goodWillPoints;
+
+    // set itemId back to 0 after sucessfully taken.
+    private void ResetItemID()
+    {
+        ItemID = 0;
+    }
+
+    private async Task HandleDelite()
+    {
+        var itemToDelete = await ItemService.TakeItem(ItemID);
+        _goodWillPoints = itemToDelete.Weight;
+        ResetItemID();
+        
+        _successMessage = true;
+        StateHasChanged();
+        await Task.Delay(5000);
+        _successMessage = false;
+        StateHasChanged();
+    }
+
+}
