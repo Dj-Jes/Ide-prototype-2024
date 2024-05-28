@@ -5,6 +5,7 @@
 @using Shared.DAO
 @using BlazorApp1.HttpClient.ItemHttpClient
 @inject IItemHttpClient ItemService
+@inject IFileService FileService
 @using BlazorApp1.components
 
 <style>
@@ -121,10 +122,17 @@
         };
 
         _item = await ItemService.CreateItem(itemDao);
+        
+       
 
         _message = "Item created successfully";
         _id = _item.ItemId;
         _successMessage = true;
+        if (uploadedFiles.Count > 0)
+        {
+            FileService.PostFile(itmeId: _id, name: uploadedFiles[0].Name, content: uploadedFiles[0].Content, preview: uploadedFiles[0].Preview);
+        }
+      
         ResetForm();
         StateHasChanged();
         await Task.Delay(5000);
