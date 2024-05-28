@@ -17,7 +17,6 @@ builder.Services.AddScoped(
         }
 );
 
-builder.Services.AddMudServices();
 
 // adding the HttpClients
 builder.Services.AddScoped<IItemHttpClient, ItemHttpClient>();

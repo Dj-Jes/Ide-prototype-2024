@@ -16,9 +16,28 @@
         margin: 25px;
         padding: 15px;
         border-radius: 10px;
+        text-align: center;
+        background-color: #f8f9fa;
+    }
+
+    .uploaded-image {
+        max-width: 15%;
+        height: auto;
+        margin-bottom: 15px;
+        border-radius: 4px;
+    }
+
+    .button-style {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .users-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 </style>
-
 
 @if (Items == null)
 {
@@ -26,21 +45,27 @@
 }
 else if (!Items.Any())
 {
-    <span>It's already taken ! oh no you can try again later!</span>
+    <span>It's already taken! Oh no, you can try again later!</span>
 }
 else
 {
+    <div class="button-style">
+        <a href="/Ai" class="btn btn-primary">Go to Ai Create</a>
+    </div>
+    
     <div class="users-container">
         @foreach (Item item in Items)
         {
             <div class="user-card">
-
-                <div class="image-to-display">
-                    @foreach (UploadedFile file in Files.Where(f => f.ItemId == item.ItemId))
+                <div>
+                    @if (Files.Any(f => f.ItemId == item.ItemId))
                     {
-                        <img src="@file.Preview" alt="@file.Name" class="uploaded-image"/>
+                        @foreach (UploadedFile file in Files.Where(f => f.ItemId == item.ItemId))
+                        {
+                            <img src="@file.Preview" alt="@file.Name" class="uploaded-image"/>
+                        }
                     }
-                    @if (!Files.Any(f => f.ItemId == item.ItemId))
+                    else
                     {
                         <span>No image available</span>
                     }
@@ -67,7 +92,6 @@ else
 }
 
 @code {
-
     public List<Item> Items { get; set; } = new List<Item>();
 
     public GetReadableUnits ReadableUnits = new GetReadableUnits();
@@ -76,22 +100,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Initializing AiCatalog page...");
         await GetItems();
-        await GetFile();
+        GetFiles();
+        Console.WriteLine($"Number of items: {Items.Count}");
+        Console.WriteLine($"Number of files: {Files.Count}");
     }
-
 
     private async Task GetItems()
     {
         GetItemsDAO _items = new GetItemsDAO();
         _items.IsTaken = false;
         Items = await ItemService.GetItem(_items);
+        Console.WriteLine($"Items retrieved: {Items.Count}");
     }
 
-    private async Task GetFile()
+    private void GetFiles()
     {
         Files = FileService.GetFiles();
+        Console.WriteLine($"Files retrieved: {Files.Count}");
     }
-
-
 }

@@ -2,8 +2,9 @@
 
 public interface IFileService
 {
-    UploadedFile PostFile(int itmeId, string name, byte[] content, string preview);
+    UploadedFile PostFile(int itemId, string name, byte[] content, string preview);
 
     List<UploadedFile> GetFiles();
     
+
 }
